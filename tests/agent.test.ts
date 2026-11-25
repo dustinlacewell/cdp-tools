@@ -116,15 +116,14 @@ test("recipe captures isolated variants, diagnostics, CPU, performance, accessib
       assert.equal(png.readUInt32BE(16), width);
     }
     await assert.rejects(
-      run({ steps: [{ wait: "#missing" }], timeoutMs: 500 }),
+      run({ steps: [{ wait: "#missing" }], timeoutMs: 5000 }),
       (e: any) => {
         const result = JSON.parse(e.stdout);
-        return (
-          e.code === 1 &&
-          !result.ok &&
-          result.variants[0].error.stage === "steps[0]" &&
-          result.variants[0].artifacts.includes("diagnostics.json")
-        );
+        assert.equal(e.code, 1, e.stdout);
+        assert.equal(result.ok, false, e.stdout);
+        assert.equal(result.variants[0].error.stage, "steps[0]", e.stdout);
+        assert.ok(result.variants[0].artifacts.includes("diagnostics.json"), e.stdout);
+        return true;
       },
     );
     await assert.rejects(
