@@ -1,0 +1,25 @@
+name: Test CLI
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm pack
+      - run: npm install --prefix ./package-test ./cdp-tools-1.1.0.tgz
+      - run: npm exec --prefix ./package-test -- cdp version
+      - run: node --test tests/trace/release.test.ts
+        env:
+          TRACE_QUERY_TEST_CLI: ./package-test/node_modules/cdp-tools/dist/trace-query.js
+          CDP_TEST_CLI: ./package-test/node_modules/cdp-tools/dist/agent.js

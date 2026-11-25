@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace Query | CDP Tools</title>
+<meta name="description" content="Play a slingshot game and follow a real Chrome CPU profile from a slow shot to a measured fix.">
+<meta name="theme-color" content="#f4f4ed"><link rel="stylesheet" href="/site.css"></head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a>
+  <nav aria-label="Primary">
+    <a href="/trace-query/" aria-current="page">Trace Query</a>
+  </nav>
+</header>
+<main id="main">
+<section class="hero" aria-labelledby="before-title">
+<div class="intro">
+<p class="kicker">trace-query &middot; Chrome Performance CLI</p>
+<h1 id="before-title">Why does my game <em>stutter?</em></h1>
+<p class="lead">Drag the blue ball and release. See how it stutters as it flies? Trace Query in CDP Tools lets you investigate Chrome performance traces. Let&rsquo;s use it to diagnose the performance issue.</p>
+
+</div>
+<iframe src="/trace-query/slingshot/index.html?demo=before" title="Play the stuttering game." width="1080" height="520"></iframe>
+</section>
+<section class="step"><div><h2>Measure the stutter.</h2><p>At 60 Hz, a smooth shot gets a new frame about every 16.7 ms. In this shot, half the gaps exceeded 50 ms. The longest lasted 117 ms.</p></div><div><div class="terminal"><pre class="input"><code><span aria-hidden="true">$ </span>cdp trace frames before.json.gz --format text</code></pre><pre class="output" tabindex="0"><samp>Frame outcomes: 103 presented, 99 partial, 240 dropped
+Presentation gaps: 100 intervals, median 50.07ms, p95 66.80ms, max 116.77ms</samp></pre></div><p class="caption">First two lines of the frame report.</p></div></section>
+<section class="step"><div><h2>Find the expensive function.</h2><p>The game spent 4.08 seconds in <code>overlaps</code>, the function that tests whether two shapes might touch. Its caller checks 8.4 million pairs per physics step. Most are pairs of ground tiles. Neither tile can move.</p></div><div><div class="terminal"><pre class="input"><code><span aria-hidden="true">$ </span>cdp trace profile before.json.gz --format text --origin /slingshot/ --limit 3</code></pre><pre class="output" tabindex="0"><samp>CPU Profile: 11562 total samples, 10931 matching self samples (origin: /slingshot/)
+Matched self time: ~5.53s
+
+Function                   Self Time  Self %  Samples  Source
+─────────────────────────────────────────────────────────────────────
+overlaps                       4.08s   73.8%     7594  physics.js:117
+findCollisionPairsNaively      1.39s   25.1%     3075  physics.js:122
+measure                      39.91ms    0.7%      212  game.js:115</samp></pre></div></div></section>
+<section class="step"><div><h2>Skip the stationary pairs.</h2><p>Check each moving body against the ground. If it reaches the ground, its coordinates tell us which tile to test. The ball and blocks still collide with one another as before.</p></div><div class="terminal"><div class="input code-label">physics.js &middot; fixed ground check</div><pre class="output" tabindex="0"><code>if (this.terrain &amp;&amp; overlaps(body, this.terrain)) {
+  const tile = this.terrainTileAt(body.left, body.top);
+  if (overlaps(body, tile)) grounded.add(body);
+}</code></pre></div></section>
+<section class="step" aria-labelledby="after-title">
+<div><h2 id="after-title">Play again with the fix.</h2><p>Take another shot. With the new collision search, the recorded p95 gap fell from 66.80 ms to 16.72 ms.</p></div>
+<iframe src="/trace-query/slingshot/index.html?demo=after" title="Play again with the fix." width="1080" height="520"></iframe>
+</section>
+<section id="reference" class="command-reference" aria-labelledby="reference-title">
+<div class="sectionhead"><h2 id="reference-title">Commands</h2><a href="/guide.md" download>Download full guide &darr;</a></div>
+<p class="reference-note">Use a plain or gzipped Chrome trace for <code>FILE</code>, or <code>-</code> for stdin. Queries return JSON by default. Add <code>--format text</code> for a terminal report. The standalone alias uses <code>trace-query FILE COMMAND</code>.</p>
+<h3>Recording and inspection</h3>
+<dl>
+<dt id="cmd-record"><code><strong>cdp trace record</strong> RECIPE.json [--preset game|standard] [--out FILE]</code></dt><dd>Record a recipe in Chrome. The game preset captures CPU samples and compositor events.</dd>
+<dt id="cmd-inventory"><code><strong>cdp trace inventory</strong> FILE</code></dt><dd>Identify evidence present in this trace.</dd>
+<dt id="cmd-overview"><code><strong>cdp trace overview</strong> FILE</code></dt><dd>Trace summary: duration, threads, event counts.</dd>
+<dt id="cmd-threads"><code><strong>cdp trace threads</strong> FILE</code></dt><dd>List all threads with event counts.</dd>
+<dt id="cmd-categories"><code><strong>cdp trace categories</strong> FILE</code></dt><dd>List all event categories with counts.</dd>
+<dt id="cmd-names"><code><strong>cdp trace names</strong> FILE [--cat &lt;cat&gt;] [--thread &lt;name&gt;] [--limit N]</code></dt><dd>List unique event names with occurrence counts.</dd>
+</dl>
+<h3>Frames and game performance</h3>
+<dl>
+<dt id="cmd-pacing"><code><strong>cdp trace pacing</strong> FILE</code></dt><dd>Presentation gaps and dropped frames by stream.</dd>
+<dt id="cmd-diagnose"><code><strong>cdp trace diagnose</strong> FILE [frame-id]</code></dt><dd>Inspect the worst gap or a selected frame.</dd>
+<dt id="cmd-frames"><code><strong>cdp trace frames</strong> FILE</code></dt><dd>Animation frame timing statistics.</dd>
+<dt id="cmd-frame"><code><strong>cdp trace frame</strong> FILE [INDEX|worst]</code></dt><dd>Break down a single frame&#x27;s events.</dd>
+<dt id="cmd-metrics"><code><strong>cdp trace metrics</strong> FILE [pattern]</code></dt><dd>Game marks, measures, custom tracks and GPU timers.</dd>
+<dt id="cmd-long-tasks"><code><strong>cdp trace long-tasks</strong> FILE [--threshold N]</code></dt><dd>Main-thread tasks exceeding threshold (ms).</dd>
+<dt id="cmd-gc"><code><strong>cdp trace gc</strong> FILE</code></dt><dd>Garbage collection summary.</dd>
+<dt id="cmd-counters"><code><strong>cdp trace counters</strong> FILE [--name &lt;pattern&gt;]</code></dt><dd>Counter (C) event values over time.</dd>
+</dl>
+<h3>Events and timing</h3>
+<dl>
+<dt id="cmd-events"><code><strong>cdp trace events</strong> FILE [pattern]</code></dt><dd>Query complete intervals with source timestamps.</dd>
+<dt id="cmd-search"><code><strong>cdp trace search</strong> FILE &lt;pattern&gt; [--limit N] [--thread &lt;name&gt;]</code></dt><dd>Search events by name (regex).</dd>
+<dt id="cmd-summarize"><code><strong>cdp trace summarize</strong> FILE &lt;name&gt;</code></dt><dd>Stats for a specific event name.</dd>
+<dt id="cmd-slowest"><code><strong>cdp trace slowest</strong> FILE &lt;pattern&gt; [--limit N]</code></dt><dd>Longest individual occurrences of an event.</dd>
+<dt id="cmd-top"><code><strong>cdp trace top</strong> FILE [--n N] [--thread &lt;name&gt;] [--cat &lt;cat&gt;]</code></dt><dd>Top N events by total duration.</dd>
+<dt id="cmd-self"><code><strong>cdp trace self</strong> FILE [pattern]</code></dt><dd>Rank exclusive thread time.</dd>
+<dt id="cmd-tree"><code><strong>cdp trace tree</strong> FILE &lt;pattern&gt; [--limit N]</code></dt><dd>Show call tree for events matching pattern.</dd>
+<dt id="cmd-group"><code><strong>cdp trace group</strong> FILE &lt;pattern&gt; [--budget N] [--depth N] [--limit N]</code></dt><dd>Analyze recurring event: distribution, children, budget.</dd>
+<dt id="cmd-slices"><code><strong>cdp trace slices</strong> FILE &lt;pattern&gt; [--limit N]</code></dt><dd>Show async slices (b/e pairs) matching pattern.</dd>
+</dl>
+<h3>JavaScript and CPU profiles</h3>
+<dl>
+<dt id="cmd-sources"><code><strong>cdp trace sources</strong> FILE</code></dt><dd>List all JS source URLs from the trace.</dd>
+<dt id="cmd-scripts"><code><strong>cdp trace scripts</strong> FILE</code></dt><dd>List known scriptId → URL mappings.</dd>
+<dt id="cmd-calls"><code><strong>cdp trace calls</strong> FILE [--source &lt;url&gt;] [--limit N]</code></dt><dd>Function calls, optionally filtered by source URL.</dd>
+<dt id="cmd-functions"><code><strong>cdp trace functions</strong> FILE [--sort total|mean|max|count] [--limit N]</code></dt><dd>All functions called, with call count and durations.</dd>
+<dt id="cmd-profile"><code><strong>cdp trace profile</strong> FILE [--limit N]</code></dt><dd>CPU profile: sampled self-time by function.</dd>
+<dt id="cmd-profile-heavy"><code><strong>cdp trace profile-heavy</strong> FILE [--limit N]</code></dt><dd>CPU profile: self+total time (bottom-up).</dd>
+</dl>
+<h3>Comparisons and budgets</h3>
+<dl>
+<dt id="cmd-diff"><code><strong>cdp trace diff</strong> BEFORE.json AFTER.json REPORT [options]</code></dt><dd>Compare two traces (supports: profile, top, group, health, frames, gc, long-tasks).</dd>
+<dt id="cmd-check"><code><strong>cdp trace check</strong> FILE &lt;pattern&gt; --budget MS</code></dt><dd>Enforce p95 duration (exit 2 for a breach).</dd>
+</dl>
+</section>
+</main>
+<footer class="site-footer"><a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a><span>Chrome capture and diagnostics</span></footer></body></html>

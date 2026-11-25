@@ -1,0 +1,9 @@
+node_modules/
+dist/
+artifacts/
+archive/
+*.tgz
+
+/traces/
+/site/.openai/
+/package-test/

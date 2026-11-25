@@ -1,0 +1,36 @@
+{
+  "name": "cdp-tools",
+  "version": "1.1.0",
+  "description": "Chrome capture and diagnostics for local agents",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "cdp": "dist/agent.js",
+    "trace-query": "dist/trace-query.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "examples/traces"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.release.json",
+    "test": "node --test tests/browser.test.ts tests/agent.test.ts \"tests/trace/*.test.ts\"",
+    "prepack": "npm run build",
+    "check": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "4.6.7",
+    "@streamparser/json": "0.0.26"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.4",
+    "typescript": "5.9.3"
+  },
+  "bundleDependencies": [
+    "@streamparser/json",
+    "zod"
+  ]
+}

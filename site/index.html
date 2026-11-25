@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Control Chrome, capture pages, and profile interactions from an agent-friendly command line."><title>CDP Tools — Chrome tools for agents</title><meta name="theme-color" content="#f4f4ed"><link rel="stylesheet" href="/site.css"></head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a>
+  <nav aria-label="Primary">
+    <a href="/trace-query/">Trace Query</a>
+  </nav>
+</header>
+<main id="main"><section class="hero"><div class="intro"><p class="kicker"><i></i> Chrome DevTools Protocol</p><h1>Chrome tools<br>for <em>agents.</em></h1><p class="lead">Give your coding agent a way to check its work in Chrome. It can click through a change, see the result at phone size, and read the browser errors when a flow breaks.</p></div>
+<figure aria-label="Illustration of layered browser capture and profiling output"><div class="plot-label">FIG. 01 / BROWSER SESSION</div><canvas id="scope" width="800" height="500" aria-hidden="true"></canvas><figcaption><span><i></i> RENDER TRACE</span><span>CDP Tools / 1.1</span></figcaption></figure></section>
+<section id="commands" class="command-reference" aria-labelledby="reference-title"><div class="sectionhead"><h2 id="reference-title">Commands</h2><a href="/guide.md" download>Download full guide &darr;</a></div>
+<p class="reference-note">For commands that attach to Chrome, use <code>--page</code> to select a tab by ID or a unique title or URL match. Set <code>CDP_PORT</code> to the port printed by <code>cdp launch</code>. The default is 9222.</p>
+<h3>Browser control</h3>
+<dl>
+<dt id="cmd-launch"><code><strong>cdp launch</strong> [URL] [--timeout MS]</code></dt><dd>Start headless Chrome and print its debugging endpoint. The browser stays open until interrupted.</dd>
+<dt id="cmd-pages"><code><strong>cdp pages</strong> </code></dt><dd>List the IDs, titles, and URLs of open tabs.</dd>
+<dt id="cmd-goto"><code><strong>cdp goto</strong> URL [--page MATCH] [--timeout MS]</code></dt><dd>Navigate the selected tab and wait for the document to load.</dd>
+<dt id="cmd-click"><code><strong>cdp click</strong> SELECTOR [--page MATCH] [--timeout MS]</code></dt><dd>Scroll a matching element into view and click it.</dd>
+<dt id="cmd-wait"><code><strong>cdp wait</strong> SELECTOR [--page MATCH] [--timeout MS]</code></dt><dd>Wait until a matching element is visible.</dd>
+<dt id="cmd-screenshot"><code><strong>cdp screenshot</strong> [FILE] [--page MATCH]</code></dt><dd>Save a viewport PNG. The default filename is screenshot.png. Use --full-page for the document or --element SELECTOR for a single element. To automate capture, add --launch, --url URL, repeated --click SELECTOR, --wait SELECTOR, or --timeout MS. A positional page match after FILE also works.</dd>
+</dl>
+<h3>Page inspection</h3>
+<dl>
+<dt id="cmd-eval"><code><strong>cdp eval</strong> EXPRESSION [--page MATCH]</code></dt><dd>Evaluate JavaScript in the tab and return the result as JSON.</dd>
+<dt id="cmd-ax"><code><strong>cdp ax</strong> [--page MATCH]</code></dt><dd>Read accessible names, roles, and states, including a list of unnamed controls.</dd>
+<dt id="cmd-metrics"><code><strong>cdp metrics</strong> [--page MATCH]</code></dt><dd>Read Chrome performance counters and JavaScript heap usage.</dd>
+</dl>
+<h3>Profiling and comparison</h3>
+<dl>
+<dt id="cmd-cpu"><code><strong>cdp cpu</strong> FILE [--duration MS] [--page MATCH]</code></dt><dd>Save a V8 CPU profile. The default recording lasts one second.</dd>
+<dt id="cmd-allocations"><code><strong>cdp allocations</strong> FILE [--duration MS] [--page MATCH]</code></dt><dd>Sample memory allocations and save a DevTools profile. The default recording lasts one second.</dd>
+<dt id="cmd-heap"><code><strong>cdp heap</strong> FILE [--page MATCH]</code></dt><dd>Save a complete V8 heap snapshot.</dd>
+<dt id="cmd-heap-diff"><code><strong>cdp heap-diff</strong> BEFORE.heapsnapshot AFTER.heapsnapshot</code></dt><dd>Compare object counts and shallow memory usage by type.</dd>
+<dt id="cmd-compare"><code><strong>cdp compare</strong> BASELINE.json CANDIDATE.json [--max-p95-increase MS]</code></dt><dd>Compare two performance reports. With a threshold, exit with code 1 if the increase in p95 frame time exceeds it.</dd>
+</dl>
+<h3>Recipes and CLI information</h3>
+<dl>
+<dt id="cmd-trace"><code><strong>cdp trace</strong> COMMAND FILE [options]</code></dt><dd>Record Chrome traces or query frame pacing, CPU samples, game metrics, and budgets. <a href="/trace-query/#reference">Trace command reference</a></dd>
+<dt id="cmd-run"><code><strong>cdp run</strong> RECIPE.json [--out DIRECTORY]</code></dt><dd>Run a JSON recipe in fresh Chrome profiles and return artifact paths. Use a dash in place of the filename to read from stdin.</dd>
+<dt id="cmd-schema"><code><strong>cdp schema</strong> </code></dt><dd>Print the JSON Schema for recipes, including defaults and accepted options.</dd>
+<dt id="cmd-help"><code><strong>cdp help</strong> </code></dt><dd>List CLI usage and exit codes. Also available as cdp --help or simply cdp.</dd>
+<dt id="cmd-version"><code><strong>cdp version</strong> </code></dt><dd>Print the installed CLI version. Also available as cdp --version.</dd>
+</dl>
+</section>
+<section id="install"><div><p class="kicker">Version 1.1.0</p><h2>Install the CLI.</h2><p>Use Node 24 or newer and an installed Chrome or Chromium browser.</p><a class="button" download href="cdp-tools-1.1.0.tgz">Download package ↓</a></div><div class="installcode"><small>From your download directory</small><pre>npm install -g ./cdp-tools-1.1.0.tgz
+cdp version
+cdp help</pre></div></section></main>
+<footer class="site-footer"><a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a><span>Chrome capture and diagnostics</span></footer>
+
+<script type="module" src="/src/main.js"></script></body></html>

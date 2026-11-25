@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slingshot | CDP Tools</title>
+  
+  <link rel="stylesheet" href="game.css">
+  <script type="module" src="game.js"></script>
+<meta name="theme-color" content="#f4f4ed"><link rel="stylesheet" href="/site.css"></head>
+<body data-state="loading">
+  <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a>
+  <nav aria-label="Primary">
+    <a href="/trace-query/">Trace Query</a>
+  </nav>
+</header>
+  <main id="main" class="game">
+    <h1>Slingshot</h1>
+    <div class="field">
+      <svg id="field" viewBox="0 0 1080 432" xmlns="http://www.w3.org/2000/svg"
+        tabindex="0" role="application" aria-label="Slingshot. Knock the gold squares off the towers."
+        aria-describedby="keyboard-hint">
+        <defs><pattern id="terrain-tiles" patternUnits="userSpaceOnUse"><path id="tile-outline"/></pattern></defs>
+        <g id="scene" transform="scale(36)">
+          <g id="ground"><rect x="0" y="10.2" width="30" height="1.8"/><rect x="0" y="10.2" width="30" height="1.8" id="terrain-grid"/><path d="M0 10.2H30" class="floor-line"/></g>
+          <g id="bodies"></g>
+          <g id="aim"></g>
+          <g class="sling">
+            <path d="M3.52 10.18h1.56M3.83 10.16l.44-1.75.5 1.75"/>
+            <path d="M4.27 8.41l-.46-.69m.46.69.51-.69"/>
+          </g>
+          <path id="band" d="M3.81 7.72L4.3 7.9L4.78 7.72"/>
+          <g id="ball" transform="translate(4.3 7.9)">
+            <circle class="ball-fill" r=".46"/>
+            <path class="ball-glint" d="M-.26-.11a.28.28 0 0 1 .18-.16"/>
+          </g>
+        </g>
+      </svg>
+      <div id="ammo" role="img" aria-label="4 shots remaining"></div>
+      <button id="restart" type="button" aria-label="Restart game" title="Restart game">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6"/></svg>
+      </button>
+      <p class="sr-only" id="keyboard-hint">Drag the ball back and release, or aim with the arrow keys and press Space to shoot. Press R to restart.</p>
+      <span id="result" role="status"></span>
+    </div>
+    <noscript>Enable JavaScript to play.</noscript>
+  </main>
+<footer class="site-footer"><a class="site-brand" href="/" aria-label="CDP Tools home"><b aria-hidden="true">&gt;_</b> CDP Tools</a><span>Chrome capture and diagnostics</span></footer>
+</body>
+</html>

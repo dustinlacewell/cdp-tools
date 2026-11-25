@@ -1,0 +1,34 @@
+.field { width: 100%; position: relative; }
+#field { display: block; width: 100%; aspect-ratio: 5 / 2; height: auto; border-radius: 3px; background: #e8ede6; touch-action: none; user-select: none; }
+#field:focus-visible { outline: 2px solid #245dc3; outline-offset: 1px; }
+#ground rect { fill: #c9d5c9; }
+#ground #terrain-grid { fill: url(#terrain-tiles); }
+#tile-outline { stroke: #aabcae; stroke-width: .012; fill: none; }
+.floor-line { stroke: #617c68; stroke-width: .055; }
+.sling path { fill: none; stroke: #294937; stroke-width: .13; stroke-linecap: round; stroke-linejoin: round; }
+#band { fill: none; stroke: #7c6251; stroke-width: .075; stroke-linejoin: round; }
+#aim circle { fill: #4c6d5a; }
+#ball { cursor: grab; }
+body[data-dragging] #field { cursor: grabbing; }
+body[data-state="flying"] #ball { cursor: default; }
+.ball-fill { fill: #5485ec; stroke: #244770; stroke-width: .065; }
+.ball-glint { stroke: #c4dcff; stroke-width: .055; fill: none; stroke-linecap: round; }
+.block { fill: #a3b6a8; stroke: #385745; stroke-width: .052; }
+.block-edge { fill: none; stroke: #cddace; stroke-width: .035; }
+.target { fill: #f4b94d; stroke: #735326; stroke-width: .058; }
+.target-core { fill: #775320; }
+.cleared .target { fill: #bac0ae; stroke: #72836b; }
+.cleared .target-core { fill: #929f87; }
+.game { padding-block: var(--section-space); }
+.game h1 { margin-bottom: 16px; }
+.embedded .site-header, .embedded .site-footer, .embedded .skip-link, .embedded h1 { display: none; }
+.embedded .game { max-width: none; padding: 2px 2px 5px; }
+
+#ammo, #restart, #result { position: absolute; }
+#ammo { top: 12px; left: 12px; display: flex; gap: 5px; pointer-events: none; }
+#ammo i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #244770; background: #5485ec; }
+#ammo .spent { background: transparent; }
+#restart { top: 4px; right: 4px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; color: #294937; background: #f4f4eddf; border: 0; border-radius: 50%; cursor: pointer; }
+#restart:hover { background: white; }
+#result { left: 50%; top: 12%; transform: translateX(-50%); color: #294937; font-weight: 700; pointer-events: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
