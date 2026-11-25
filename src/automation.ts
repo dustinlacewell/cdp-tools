@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
-import { type Session } from "./session.ts";
+import { ProtocolTimeout, type Session } from "./session.ts";
 
 export async function navigate(session: Session, url: string, timeout: number) {
   new URL(url);
@@ -42,9 +42,13 @@ async function element(session: Session, selector: string, timeout: number, acti
   const deadline = Date.now() + timeout;
   do {
     const reply = await session.send("Runtime.evaluate", { expression, returnByValue: true },
-      Math.max(1, deadline - Date.now())) as {
+      Math.max(1, deadline - Date.now())).catch(error => {
+        if (error instanceof ProtocolTimeout) return null;
+        throw error;
+      }) as null | {
       result: { value?: Box }; exceptionDetails?: { exception?: { description?: string }; text: string };
     };
+    if (!reply) break;
     if (reply.exceptionDetails) throw new Error(reply.exceptionDetails.exception?.description ?? reply.exceptionDetails.text);
     if (reply.result.value) return reply.result.value;
     await sleep(Math.min(80, Math.max(0, deadline - Date.now())));

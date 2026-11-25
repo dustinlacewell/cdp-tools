@@ -1,3 +1,5 @@
+export class ProtocolTimeout extends Error {}
+
 export interface Session {
   send(method: string, params?: Record<string, unknown>, timeoutMs?: number): Promise<unknown>;
   /** Subscribe to a CDP event; returns the unsubscribe. */
@@ -41,7 +43,7 @@ export function openSession(url: string): Promise<Session> {
       return new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
           pending.delete(id);
-          reject(new Error(`${method} timeout`));
+          reject(new ProtocolTimeout(`${method} timeout`));
         }, timeoutMs);
         pending.set(id, {
           resolve: (v) => (clearTimeout(timer), resolve(v)),
